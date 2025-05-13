@@ -1,7 +1,0 @@
-POST http://localhost:3000/tasks/
-content-type: application/json
-
-{
-  "titulo": "Finish project report",
-  "descripcion": "Complete the final report for the project"
-}

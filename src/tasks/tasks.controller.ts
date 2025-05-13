@@ -7,21 +7,27 @@ import {
   Param,
   Put,
   Delete,
+  UseGuards,
   Req,
-  ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Request } from 'express';
-
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Task } from './task.entity';
+import { PermissionsGuard } from 'src/guards/permisssions.guard';
+@UseGuards(JwtAuthGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Post()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async create(@Body() body: any, @Req() req: Request) {
-    const user = { userId: 369 };
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async create(
+    @Body() body: Partial<Task>,
+    @Req() req: { user: { userId: number } },
+  ) {
+    if (!body || (!body?.titulo && body?.descripcion))
+      throw new BadRequestException();
+    const user = req.user;
     const newTask = await this.tasksService.create({
       ...body,
       user_id: user.userId,
@@ -30,36 +36,20 @@ export class TasksController {
   }
 
   @Get()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async findAll(@Req() req: Request) {
-    const user = { userId: 369 };
+  async findAll(@Req() req: { user: { userId: number } }) {
+    const user = req.user;
     return this.tasksService.findAll(user.userId);
   }
 
+  @UseGuards(PermissionsGuard)
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() body: any,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Req() req: Request,
-  ) {
-    const user = { userId: 369 };
-    const task = await this.tasksService.findOne(+id);
-    if (!task || task.user_id !== user.userId) {
-      throw new ForbiddenException('No tienes acceso a esta tarea');
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async update(@Param('id') id: string, @Body() body: Partial<Task>) {
     return this.tasksService.update(+id, body);
   }
 
+  @UseGuards(PermissionsGuard)
   @Delete(':id')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async remove(@Param('id') id: string, @Req() req: Request) {
-    const user = { userId: 369 };
-    const task = await this.tasksService.findOne(+id);
-    if (!task || task.user_id !== user.userId) {
-      throw new ForbiddenException('No tienes acceso a esta tarea');
-    }
+  async remove(@Param('id') id: string) {
     await this.tasksService.remove(+id);
     return { message: 'Tarea eliminada' };
   }
