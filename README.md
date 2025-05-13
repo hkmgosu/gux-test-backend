@@ -1,3 +1,23 @@
+# Proyecto NestJS con Docker Compose
+
+Este proyecto es una aplicación NestJS configurada para ejecutarse en contenedores Docker mediante Docker Compose hecho para el proyecto test de GUX que trabaja con el frontend del mismo test.
+
+## Requisitos previos
+
+- [Docker](https://www.docker.com/get-started) instalado en tu máquina
+- [Docker Compose](https://docs.docker.com/compose/install/) (normalmente incluido en Docker Desktop)
+
+## Configuración
+
+Antes de levantar los servicios, asegúrate de tener configurado correctamente tu entorno y, si es necesario, editar los archivos de configuración.
+
+## Cómo ejecutar
+
+1. Clona este repositorio
+2. docker compose build
+3. disfruta
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
